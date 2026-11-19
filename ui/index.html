@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AddonBridge · 扩展管理</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/i18n.js" defer></script>
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <aside>
+      <a class="brand" href="#"><span class="logo">A</span>AddonBridge</a>
+      <div class="nav">
+        <button class="selected" data-tab="extensions">扩展管理</button
+        ><button data-tab="browsers">浏览器</button
+        ><button data-tab="sync">同步设置</button>
+      </div>
+      <div class="sidebar-bottom">
+        <span class="dot"></span><span id="daemon">后台运行中</span>
+        <p>关闭此页面后，托盘程序会继续自动同步。</p>
+      </div>
+    </aside>
+    <main>
+      <header>
+        <div>
+          <div class="eyebrow">你的浏览器工具箱</div>
+          <h1 id="heading">扩展管理</h1>
+        </div>
+        <div class="header-actions">
+          <button id="check-updates">检查更新</button>
+          <button class="primary" id="sync-now">立即同步 <span>↻</span></button>
+        </div>
+      </header>
+      <div class="status-bar">
+        <span id="status">正在连接管理程序…</span><span id="last-sync"></span>
+      </div>
+      <div id="error" role="alert" hidden></div>
+      <section id="extensions" class="tab">
+        <div class="section-title">
+          <h2>GitHub 扩展</h2>
+          <span id="extension-count"></span>
+        </div>
+        <div id="extension-list"></div>
+        <form id="add-form" class="card add-card">
+          <h3>添加扩展</h3>
+          <p>从 GitHub Release 获取 Chrome 成品 ZIP，自动跟踪最新稳定版本。</p>
+          <div class="form-grid">
+            <label
+              >GitHub 仓库<input
+                id="repo"
+                required
+                placeholder="owner/repository"
+                autocomplete="off" /></label
+            ><label
+              >安装包匹配规则<input
+                id="asset"
+                value="*chrome*.zip"
+                placeholder="*chrome*.zip"
+                required /></label
+            ><button class="primary" type="submit">添加扩展</button>
+          </div>
+        </form>
+      </section>
+      <section id="browsers" class="tab" hidden>
+        <h2>浏览器用户资料</h2>
+        <p class="intro">
+          默认使用现有用户资料。下载后可从扩展管理页加载，已安装的扩展可在同一页面重新加载。
+        </p>
+        <div id="browser-list" class="browser-grid"></div>
+      </section>
+      <section id="sync" class="tab" hidden>
+        <div class="card">
+          <div class="section-title">
+            <div>
+              <h2>自动同步</h2>
+              <p>检查扩展更新，并同步已开启的插件设置。</p>
+            </div>
+            <button id="pause">暂停自动同步</button>
+          </div>
+          <form id="interval-form" class="inline-form">
+            <label
+              >同步间隔（分钟）<input
+                id="interval"
+                type="number"
+                min="5"
+                max="10080"
+                required /></label
+            ><button type="submit">保存间隔</button>
+          </form>
+          <label class="startup-toggle"
+            ><input id="startup-toggle" type="checkbox" />随系统启动
+            AddonBridge</label
+          >
+        </div>
+        <div class="card">
+          <div class="section-title">
+            <h2>GitHub Gist</h2>
+            <span id="gist-state" class="badge">未连接</span>
+          </div>
+          <p>
+            在各台电脑使用同一个 Gist 和共享密码。清单和扩展设置会加密后上传。
+          </p>
+          <form id="credentials-form">
+            <div class="form-grid two">
+              <label
+                >GitHub Token<input
+                  id="token"
+                  type="password"
+                  placeholder="具有 Gist 读写权限"
+                  autocomplete="off"
+                  required /></label
+              ><label
+                >共享加密密码<input
+                  id="password"
+                  type="password"
+                  minlength="12"
+                  placeholder="至少 12 个字符"
+                  autocomplete="off"
+                  required
+              /></label>
+            </div>
+            <div class="form-footer">
+              <label class="check"
+                ><input
+                  id="remember"
+                  type="checkbox"
+                  checked
+                />保存到系统凭据库</label
+              ><button type="submit">保存凭据</button>
+            </div>
+            <button id="copy-password" type="button">复制同步密码</button>
+            <p id="credential-state" class="hint"></p>
+          </form>
+          <hr />
+          <form id="gist-form" class="inline-form">
+            <label
+              >已有 Gist ID<input
+                id="gist-id"
+                placeholder="粘贴另一台电脑的 Gist ID"
+                autocomplete="off"
+                required /></label
+            ><button type="submit">连接 Gist</button
+            ><button id="gist-create" type="button">创建 Gist</button>
+          </form>
+        </div>
+        <div class="note">
+          扩展设置同步支持 chrome.storage.local 和
+          chrome.storage.sync。每个扩展可单独开启，可能包含该扩展的历史记录或登录状态。
+        </div>
+      </section>
+      <footer>
+        AddonBridge
+        <label
+          >语言
+          <select id="language">
+            <option value="auto">跟随系统</option>
+            <option value="zh-CN">简体中文</option>
+            <option value="en">English</option>
+          </select></label
+        ><span>本机管理 · 加密同步</span>
+      </footer>
+    </main>
+  </body>
+</html>

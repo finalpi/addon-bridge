@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-19",
+  "chrome": "157.0.8103.51",
+  "untested": [
+    "macOS runtime",
+    "Linux runtime",
+    "Edge runtime",
+    "Dashboard visual interaction"
+  ],
+  "brave": "157.1.99.57",
+  "cpuSecondsSecond": 0.09375,
+  "idlePrivateMiB": 16.14,
+  "platform": "Windows amd64",
+  "cpuSecondsFirst": 0.09375,
+  "idleWorkingSetMiB": 13.57,
+  "tests": [
+    "Go unit tests and static analysis",
+    "Authenticated encryption and concurrent Gist merge via local HTTP server",
+    "Chrome and Brave image menu registration on unpacked installation and reload in temporary profiles",
+    "Unpacked reload retains extension ID and synchronized settings",
+    "Browser updates use the upstream service worker and manifest version"
+  ],
+  "desktop": {
+    "javascriptSyntax": "passed",
+    "idleWorkingSetMiB": 13.65,
+    "visualInteraction": "not verified: external Chrome/Edge control channel unavailable",
+    "authorizationTests": "passed",
+    "trayProcessStarted": true,
+    "httpActions": [
+      "Add GitHub extension",
+      "Pause automatic sync",
+      "Set interval to 30 minutes"
+    ],
+    "installer": "Open the selected profile’s extensions page to load or reload the prepared package"
+  },
+  "defaultInstallation": "Load unpacked in the browser extensions page for existing profiles"
+}

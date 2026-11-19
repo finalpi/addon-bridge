@@ -1,0 +1,10 @@
+dist/
+.smoke/
+.gui-*
+.test-*/
+*.log
+addonbridge
+addonbridge.exe
+
+AddonBridge.exe
+addonbridge-cli.exe
