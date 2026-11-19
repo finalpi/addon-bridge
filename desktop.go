@@ -345,6 +345,58 @@ func (d *desktopState) serve(w http.ResponseWriter, r *http.Request) {
 		args = []string{"interval", input.Value}
 	case "gist":
 		args = []string{"gist", input.Value}
+	case "export-sync":
+		d.mu.Lock()
+		creds := d.credentials
+		d.mu.Unlock()
+		a, err := openApp(d.root)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		if creds.Token == "" || creds.Password == "" {
+			http.Error(w, "同步凭据尚未完整设置", 400)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Disposition", "attachment; filename=addonbridge-sync.json")
+		json.NewEncoder(w).Encode(map[string]any{"version": "1", "gist": a.Config.Gist, "githubToken": creds.Token, "password": creds.Password, "browsers": a.Config.Browsers})
+		return
+	case "import-sync":
+		var syncInfo struct {
+			Version     string    `json:"version"`
+			Gist        string    `json:"gist"`
+			GitHubToken string    `json:"githubToken"`
+			Password    string    `json:"password"`
+			Browsers    []Browser `json:"browsers"`
+		}
+		if json.Unmarshal([]byte(input.Value), &syncInfo) != nil || syncInfo.Version != "1" || syncInfo.Gist == "" || syncInfo.GitHubToken == "" || len(syncInfo.Password) < 12 {
+			http.Error(w, "同步配置文件无效", 400)
+			return
+		}
+		a, err := openApp(d.root)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		creds := credentials{Token: syncInfo.GitHubToken, Password: syncInfo.Password}
+		encoded, _ := json.Marshal(creds)
+		if err := keyring.Set(d.credentialService(), "gist", string(encoded)); err != nil {
+			http.Error(w, "无法将凭据保存到系统凭据库", 500)
+			return
+		}
+		d.mu.Lock()
+		d.credentials = creds
+		d.mu.Unlock()
+		a.Config.Gist = syncInfo.Gist
+		if len(syncInfo.Browsers) > 0 {
+			a.Config.Browsers = syncInfo.Browsers
+		}
+		if err := a.saveConfig(); err != nil {
+			http.Error(w, "无法保存 Gist 配置", 500)
+			return
+		}
+		args = []string{"gist", syncInfo.Gist}
 	case "credentials":
 		if input.Token == "" || len(input.Password) < 12 {
 			http.Error(w, "请填写 Token，以及至少 12 个字符的密码", 400)

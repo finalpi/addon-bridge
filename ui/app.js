@@ -424,13 +424,32 @@ $("gist-form").onsubmit = (event) => {
 };
 $("gist-create").onclick = () => act("gist", { value: "create" });
 $("language").onchange = () => act("language", { value: $("language").value });
-$("copy-password").onclick = async () => {
+$("export-sync").onclick = async () => {
   try {
-    const data = await request("/api/action", { action: "copy-password" });
-    if (!data.password) throw new Error(t("尚未设置同步凭据。"));
-    await navigator.clipboard.writeText(data.password);
+    const configuration = await request("/api/action", { action: "export-sync" });
+    const blob = new Blob([JSON.stringify(configuration, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "addonbridge-sync.json";
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   } catch (error) {
     showError(error);
+  }
+};
+$("import-sync").onchange = async () => {
+  const file = $("import-sync").files[0];
+  if (!file) return;
+  try {
+    const configuration = JSON.parse(await file.text());
+    if (!configuration.githubToken || !configuration.password || !configuration.gist) throw new Error("配置文件缺少 Gist、Token 或密码");
+    if (!confirm("导入将替换当前的 Gist、GitHub Token、同步密码和浏览器清单，是否继续？")) return;
+    await act("import-sync", { value: JSON.stringify(configuration) });
+  } catch (error) {
+    showError(new Error("同步配置文件无效或无法读取"));
+  } finally {
+    $("import-sync").value = "";
   }
 };
 refresh();

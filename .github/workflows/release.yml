@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.x"
+          cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run tests and static analysis
+        shell: pwsh
+        run: |
+          go test ./...
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          go vet ./...
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build six platform archives
+        run: python build_release.py
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}"
+          $files = @(
+            "dist/addonbridge-windows-amd64.zip",
+            "dist/addonbridge-windows-arm64.zip",
+            "dist/addonbridge-linux-amd64.tar.gz",
+            "dist/addonbridge-linux-arm64.tar.gz",
+            "dist/addonbridge-darwin-amd64.tar.gz",
+            "dist/addonbridge-darwin-arm64.tar.gz",
+            "dist/addonbridge-source.zip",
+            "dist/SHA256SUMS.txt"
+          )
+          gh release create $version @files --title "AddonBridge $version" --generate-notes

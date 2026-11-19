@@ -99,7 +99,7 @@
             <span id="gist-state" class="badge">未连接</span>
           </div>
           <p>
-            在各台电脑使用同一个 Gist 和共享密码。清单和扩展设置会加密后上传。
+            导出的同步文件包含完整凭据，可导入到其他电脑快速连接。请妥善保管该文件。
           </p>
           <form id="credentials-form">
             <div class="form-grid two">
@@ -129,7 +129,7 @@
                 />保存到系统凭据库</label
               ><button type="submit">保存凭据</button>
             </div>
-            <button id="copy-password" type="button">复制同步密码</button>
+            <button id="export-sync" type="button">导出完整同步配置（含 Token）</button>
             <p id="credential-state" class="hint"></p>
           </form>
           <hr />
@@ -143,6 +143,7 @@
             ><button type="submit">连接 Gist</button
             ><button id="gist-create" type="button">创建 Gist</button>
           </form>
+          <label class="file-button">导入完整同步配置<input id="import-sync" type="file" accept="application/json,.json" /></label>
         </div>
         <div class="note">
           扩展设置同步支持 chrome.storage.local 和

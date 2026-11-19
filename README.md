@@ -34,7 +34,7 @@ Linux tray support requires a StatusNotifierItem-compatible desktop. GNOME may n
 
 In **Sync settings**, enter a GitHub token with Gist read/write permission and a shared encryption password of at least 12 characters. Create a secret Gist on the first computer. Connect other computers using the same Gist ID and password.
 
-Credentials can be saved in the system credential store or kept in memory for the current session. Use **Copy sync password** when configuring another computer. Each device must be initialized separately to obtain its own device ID.
+Credentials can be saved in the system credential store or kept in memory for the current session. Use **Export full sync config** on the first computer, then import that file on the next one. It includes the Gist ID, GitHub token, shared password and browser list. Treat the file like a password. Imported credentials go into the new device system credential store. Each computer still creates its own device ID.
 
 Each device writes an encrypted snapshot. AES-256-GCM protects the payload, with PBKDF2-SHA256 key derivation and random salts and nonces. Records merge using logical counters and deterministic device ordering. Deletion markers prevent stale devices from restoring removed records. Concurrent changes to one key resolve as a whole value.
 
